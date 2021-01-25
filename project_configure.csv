@@ -1,0 +1,6 @@
+compile_tool,gcc-9 -std=c11,-mavx -mavx2 -O3 -Xpreprocessor -fopenmp -lm -mfma -lgomp
+compile_filename,main.c
+executable_filename,cmake-build-debug/C_CSR5
+input_file,cmake-build-debug/input.txt
+template_root,template/
+server_target,,
