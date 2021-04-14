@@ -9,26 +9,17 @@ typedef struct anonymouslib_timer anonymouslib_timer, *anonymouslib_timer_t;
 struct anonymouslib_timer{
     struct timeval t1, t2;
     struct timezone tzone;
-
-    void (*start)(anonymouslib_timer_t timer);
-    double (*stop)(anonymouslib_timer_t timer);
 };
 
-void start(anonymouslib_timer_t timer) {
+void anonymouslib_timer_start(anonymouslib_timer_t timer) {
     gettimeofday(&timer->t1, &timer->tzone);
 }
 
-double stop(anonymouslib_timer_t timer) {
+double anonymouslib_timer_stop(anonymouslib_timer_t timer) {
     gettimeofday(&timer->t2, &timer->tzone);
-    double elapsedTime = 0;
-    elapsedTime = (timer->t2.tv_sec - timer->t1.tv_sec) * 1000.0;      // sec to ms
+    double elapsedTime = ((double)timer->t2.tv_sec - (double)timer->t1.tv_sec) * 1000.0;      // sec to ms
     elapsedTime += (timer->t2.tv_usec - timer->t1.tv_usec) / 1000.0;   // us to ms
     return elapsedTime;
-}
-
-void init_anonymouslib_timer(anonymouslib_timer_t timer) {
-    timer->start = start;
-    timer->stop = stop;
 }
 
 iT binary_search_right_boundary_kernel(const iT *d_row_pointer,

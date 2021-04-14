@@ -39,12 +39,11 @@ int call_anonymouslib(int m, int n, int nnzA,
     }
 
     anonymouslib_timer asCSR5_timer;
-    init_anonymouslib_timer(&asCSR5_timer);
-    asCSR5_timer.start(&asCSR5_timer);
+    anonymouslib_timer_start(&asCSR5_timer);
 
     err = A.asCSR5(&A);
 
-    printf("CSR->CSR5 time = %g ms.\n", asCSR5_timer.stop(&asCSR5_timer));
+    printf("CSR->CSR5 time = %g ms.\n", anonymouslib_timer_stop(&asCSR5_timer));
 
     // check correctness by running 1 time
     err = A.spmv(alpha, y, &A);
@@ -58,13 +57,14 @@ int call_anonymouslib(int m, int n, int nnzA,
         }
 
         anonymouslib_timer CSR5Spmv_timer;
-        CSR5Spmv_timer.start(&CSR5Spmv_timer);
+        // CSR5Spmv_timer.start(&CSR5Spmv_timer);
+        anonymouslib_timer_start(&CSR5Spmv_timer);
 
         for (int i = 0; i < NUM_RUN; i++) {
             err = A.spmv(alpha, y_bench, &A);
         }
 
-        double CSR5Spmv_time = CSR5Spmv_timer.stop(&CSR5Spmv_timer) / (double) NUM_RUN;
+        double CSR5Spmv_time = anonymouslib_timer_stop(&CSR5Spmv_timer) / (double) NUM_RUN;
 
         printf("CSR5-based SpMV time = %g,  ms. Bandwidth = %g GB/s. GFlops = %g GFlops.\n", CSR5Spmv_time,
                gb / (1.0e+6 * CSR5Spmv_time), gflop / (1.0e+6 * CSR5Spmv_time));
@@ -266,8 +266,7 @@ int main(int argc, char **argv) {
 
     // compute reference results on a cpu core
     anonymouslib_timer ref_timer;
-    init_anonymouslib_timer(&ref_timer);
-    ref_timer.start(&ref_timer);
+    anonymouslib_timer_start(&ref_timer);
 
     int ref_iter = 1;
     for (int iter = 0; iter < ref_iter; iter++) {
@@ -279,7 +278,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    double ref_time = ref_timer.stop(&ref_timer) / (double) ref_iter;
+    double ref_time = anonymouslib_timer_stop(&ref_timer) / (double) ref_iter;
     printf("cpu sequential time = %g ms. Bandwidth = %g GB/s. GFlops = %g GFlops.\n\n", ref_time,
            gb / (1.0e+6 * ref_time), gflop / (1.0e+6 * ref_time));
 

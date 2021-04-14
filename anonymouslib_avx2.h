@@ -103,11 +103,6 @@ int anonymouslibHandle_asCSR5(anonymouslibHandle_t self) {
         double malloc_time = 0, tile_ptr_time = 0, tile_desc_time = 0, transpose_time = 0;
         anonymouslib_timer malloc_timer, tile_ptr_timer, tile_desc_timer, transpose_timer;
 
-        init_anonymouslib_timer(&malloc_timer);
-        init_anonymouslib_timer(&tile_desc_timer);
-        init_anonymouslib_timer(&tile_desc_timer);
-        init_anonymouslib_timer(&transpose_timer);
-
         // compute sigma
         self->_csr5_sigma = self->_computeSigma(self);
         printf("omega = %d, sigma = %d. ", ANONYMOUSLIB_CSR5_OMEGA, self->_csr5_sigma);
@@ -138,7 +133,8 @@ int anonymouslibHandle_asCSR5(anonymouslibHandle_t self) {
         self->_p = ceil((double) self->_nnz / (double) (ANONYMOUSLIB_CSR5_OMEGA * self->_csr5_sigma));
         printf("#partition = %d\n", self->_p);
 
-        malloc_timer.start(&malloc_timer);
+        // malloc_timer.start(&malloc_timer);
+        anonymouslib_timer_start(&malloc_timer);
         // malloc the newly added arrays for CSR5
         self->_csr5_partition_pointer = (ANONYMOUSLIB_UIT *) _mm_malloc((self->_p + 1) * sizeof(ANONYMOUSLIB_UIT),
                                                                   ANONYMOUSLIB_X86_CACHELINE);
@@ -155,22 +151,26 @@ int anonymouslibHandle_asCSR5(anonymouslibHandle_t self) {
         self->_csr5_partition_descriptor_offset_pointer = (ANONYMOUSLIB_IT * )
         _mm_malloc((self->_p + 1) * sizeof(ANONYMOUSLIB_IT), ANONYMOUSLIB_X86_CACHELINE);
         memset(self->_csr5_partition_descriptor_offset_pointer, 0, (self->_p + 1) * sizeof(ANONYMOUSLIB_IT));
-        malloc_time += malloc_timer.stop(&malloc_timer);
+        // malloc_time += malloc_timer.stop(&malloc_timer);
+        malloc_time += anonymouslib_timer_stop(&malloc_timer);
 
-        // convert csr data to csr5 data (3 steps)
+                // convert csr data to csr5 data (3 steps)
         // step 1. generate partition pointer
-        tile_ptr_timer.start(&tile_ptr_timer);
+        // tile_ptr_timer.start(&tile_ptr_timer);
+        anonymouslib_timer_start(&tile_ptr_timer);
         err = generate_partition_pointer(self->_csr5_sigma, self->_p, self->_m, self->_nnz,
                                          self->_csr5_partition_pointer, self->_csr_row_pointer);
         if (err != ANONYMOUSLIB_SUCCESS)
             return ANONYMOUSLIB_CSR_TO_CSR5_FAILED;
-        tile_ptr_time += tile_ptr_timer.stop(&tile_ptr_timer);
+        //tile_ptr_time += tile_ptr_timer.stop(&tile_ptr_timer);
+        tile_ptr_time += anonymouslib_timer_stop(&tile_desc_timer);
 
         self->_tail_partition_start = (self->_csr5_partition_pointer[self->_p - 1] << 1) >> 1;
         //cout << "_tail_partition_start = " << _tail_partition_start << endl;
 
         // step 2. generate partition descriptor
-        tile_desc_timer.start(&tile_desc_timer);
+        // tile_desc_timer.start(&tile_desc_timer);
+        anonymouslib_timer_start(&tile_desc_timer);
         self->_num_offsets = 0;
         err = generate_partition_descriptor(self->_csr5_sigma, self->_p, self->_m,
                                             self->_bit_y_offset, self->_bit_scansum_offset,
@@ -182,17 +182,21 @@ int anonymouslibHandle_asCSR5(anonymouslibHandle_t self) {
                                             &self->_num_offsets);
         if (err != ANONYMOUSLIB_SUCCESS)
             return ANONYMOUSLIB_CSR_TO_CSR5_FAILED;
-        tile_desc_time += tile_desc_timer.stop(&tile_desc_timer);
+//        tile_desc_time += tile_desc_timer.stop(&tile_desc_timer);
+        tile_desc_time += anonymouslib_timer_stop(&tile_desc_timer);
 
         if (self->_num_offsets) {
             //cout << "has empty rows, _num_offsets = " << _num_offsets << endl;
-            malloc_timer.start(&malloc_timer);
+            // malloc_timer.start(&malloc_timer);
+            anonymouslib_timer_start(&malloc_timer);
             self->_csr5_partition_descriptor_offset = (ANONYMOUSLIB_IT * )
             _mm_malloc(self->_num_offsets * sizeof(ANONYMOUSLIB_IT), ANONYMOUSLIB_X86_CACHELINE);
             //memset(_csr5_partition_descriptor_offset, 0, _num_offsets * sizeof(ANONYMOUSLIB_IT));
-            malloc_time += malloc_timer.stop(&malloc_timer);
+//            malloc_time += malloc_timer.stop(&malloc_timer);
+            malloc_time +=anonymouslib_timer_stop(&malloc_timer);
 
-            tile_desc_timer.start(&tile_desc_timer);
+            // tile_desc_timer.start(&tile_desc_timer);
+            anonymouslib_timer_start(&tile_desc_timer);
             err = generate_partition_descriptor_offset(self->_csr5_sigma, self->_p,
                                                        self->_bit_y_offset,
                                                        self->_bit_scansum_offset,
@@ -207,16 +211,19 @@ int anonymouslibHandle_asCSR5(anonymouslibHandle_t self) {
             //    cout << "_csr5_partition_descriptor_offset = " << _csr5_partition_descriptor_offset[i] << endl;
             if (err != ANONYMOUSLIB_SUCCESS)
                 return ANONYMOUSLIB_CSR_TO_CSR5_FAILED;
-            tile_desc_time += tile_desc_timer.stop(&tile_desc_timer);
+            //tile_desc_time += tile_desc_timer.stop(&tile_desc_timer);
+            tile_desc_time += anonymouslib_timer_stop(&tile_desc_timer);
         }
 
         // step 3. transpose column_index and value arrays
-        transpose_timer.start(&transpose_timer);
+        // transpose_timer.start(&transpose_timer);
+        anonymouslib_timer_start(&transpose_timer);
         err = aosoa_transpose(self->_csr5_sigma, self->_nnz,
                               self->_csr5_partition_pointer, self->_csr_column_index, self->_csr_value, true);
         if (err != ANONYMOUSLIB_SUCCESS)
             return ANONYMOUSLIB_CSR_TO_CSR5_FAILED;
-        transpose_time += transpose_timer.stop(&transpose_timer);
+        //transpose_time += transpose_timer.stop(&transpose_timer);
+        transpose_time += anonymouslib_timer_stop(&transpose_timer);
 
         printf("CSR->CSR5 malloc time = %f ms\n", malloc_time);
         printf("CSR->CSR5 tile_ptr time = %f ms\n", tile_ptr_time);
