@@ -15,3 +15,9 @@ cmake ..
 make -j
 ```
 
+## Run
+
+```shell
+./dist/C_CSR5 Alemdar.mtx
+```
+
