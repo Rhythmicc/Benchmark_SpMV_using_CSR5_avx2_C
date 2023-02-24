@@ -1,6 +1,0 @@
-compile_tool,cmake cmake-build-debug && cd cmake-build-debug && make
-compile_filename,main.c
-executable_filename,cmake-build-debug/C_CSR5
-input_file,cmake-build-debug/input.txt
-template_root,template/
-server_target,,

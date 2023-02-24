@@ -1,4 +1,0 @@
-/usr/local/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/local/bin/gcc-9 -DCMAKE_CXX_COMPILER=/usr/local/bin/g++-9 -G "CodeBlocks - Unix Makefiles" /Users/lianhaocheng/CLionProjects/Benchmark_SpMV_using_CSR5_C
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/lianhaocheng/CLionProjects/Benchmark_SpMV_using_CSR5_C/cmake-build-debug

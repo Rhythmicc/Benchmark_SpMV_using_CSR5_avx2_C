@@ -1,0 +1,1 @@
+gcc-12 CMakeFiles/C_CSR5.dir/main.c.o -o C_CSR5  -lm -lgomp 

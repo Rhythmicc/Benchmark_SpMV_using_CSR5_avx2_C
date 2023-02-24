@@ -1,0 +1,13 @@
+{
+  "build": "cd dist && cmake .. && make -j",
+  "entry_point": "main.c",
+  "executable": "dist/C_CSR5",
+  "server_targets": [
+    {
+      "user": "",
+      "host": "",
+      "path": "",
+      "port": "22"
+    }
+  ]
+}
