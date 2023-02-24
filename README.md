@@ -4,15 +4,14 @@ Refer from: https://github.com/weifengliu-ssslab/Benchmark_SpMV_using_CSR5
 
 Benchmark_SpMV_using_CSR5_avx2 with `C`
 
-## Build - with [Qpro](https://github.com/Rhythmicc/QuickProject)
+## Build
 
 ```shell
 cd Benchmark_SpMV_using_CSR5_avx2_C
-qrun -b
+qrun -b # with Qpro
+# or
+cd dist
+cmake ..
+make -j
 ```
 
-## Build - with cmake
-
-```
-cmake cmake-build-debug
-```
