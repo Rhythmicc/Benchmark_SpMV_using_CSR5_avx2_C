@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 project(C_CSR5 C)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_COMPILER gcc-12)
+set(CMAKE_C_COMPILER gcc)
 
 add_compile_options(-mavx -mavx2 -march=native -O3)
 add_compile_options(-Xpreprocessor ${OpenMP_C_FLAGS} -mfma)
